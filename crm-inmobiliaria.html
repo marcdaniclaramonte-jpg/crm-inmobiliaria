@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM Inmobiliaria</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-50: #E6F1FB; --blue-100: #B5D4F4; --blue-400: #378ADD; --blue-600: #185FA5; --blue-800: #0C447C;
+    --amber-50: #FAEEDA; --amber-400: #BA7517; --amber-600: #854F0B;
+    --green-50: #EAF3DE; --green-400: #639922; --green-600: #3B6D11;
+    --gray-50: #F1EFE8; --gray-100: #D3D1C7; --gray-400: #888780; --gray-600: #5F5E5A;
+    --pink-50: #FBEAF0; --pink-400: #D4537E; --pink-600: #993556;
+    --teal-50: #E1F5EE; --teal-400: #1D9E75; --teal-600: #0F6E56;
+    --bg: #F7F6F2;
+    --surface: #FFFFFF;
+    --border: rgba(0,0,0,0.08);
+    --border-md: rgba(0,0,0,0.14);
+    --text: #1A1A18;
+    --text-secondary: #5F5E5A;
+    --text-muted: #888780;
+    --radius: 10px;
+    --radius-lg: 14px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* TOP BAR */
+  .topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 1.5rem; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+  .topbar-left { display: flex; align-items: center; gap: 12px; }
+  .logo { font-size: 15px; font-weight: 600; color: var(--text); letter-spacing: -0.3px; }
+  .logo span { color: var(--blue-600); }
+  .topbar-stats { display: flex; gap: 16px; }
+  .tstat { font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 5px; }
+  .tstat strong { color: var(--text); font-weight: 600; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; }
+
+  /* FILTER BAR */
+  .filterbar { padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid var(--border); background: var(--surface); }
+  .filter-label { font-size: 12px; color: var(--text-muted); margin-right: 4px; }
+  .fbtn { font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border-md); background: transparent; color: var(--text-secondary); cursor: pointer; transition: all 0.15s; font-family: inherit; }
+  .fbtn:hover { background: var(--gray-50); }
+  .fbtn.active { background: var(--blue-600); color: #fff; border-color: var(--blue-600); }
+
+  /* BOARD */
+  .board-wrap { padding: 1.25rem 1.5rem; overflow-x: auto; }
+  .board { display: flex; gap: 12px; min-width: 900px; }
+  .col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+  .col-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-radius: var(--radius); font-size: 12px; font-weight: 600; letter-spacing: 0.2px; text-transform: uppercase; }
+  .col-head .cnt { font-size: 12px; font-weight: 700; padding: 1px 8px; border-radius: 12px; }
+  .col-recibida .col-head { background: var(--blue-50); color: var(--blue-800); }
+  .col-recibida .col-head .cnt { background: var(--blue-100); color: var(--blue-800); }
+  .col-analizada .col-head { background: var(--amber-50); color: var(--amber-600); }
+  .col-analizada .col-head .cnt { background: #FAC775; color: var(--amber-600); }
+  .col-contactada .col-head { background: var(--gray-50); color: var(--gray-600); }
+  .col-contactada .col-head .cnt { background: var(--gray-100); color: var(--gray-600); }
+  .col-negociacion .col-head { background: var(--teal-50); color: var(--teal-600); }
+  .col-negociacion .col-head .cnt { background: #9FE1CB; color: var(--teal-600); }
+  .col-captada .col-head { background: var(--green-50); color: var(--green-600); }
+  .col-captada .col-head .cnt { background: #C0DD97; color: var(--green-600); }
+
+  /* CARDS */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.75rem; cursor: pointer; transition: box-shadow 0.15s, border-color 0.15s; box-shadow: var(--shadow); }
+  .card:hover { border-color: var(--border-md); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.4; }
+  .card-loc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .card-price { font-size: 14px; font-weight: 600; color: var(--text); margin-top: 6px; font-family: 'DM Mono', monospace; }
+  .card-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+  .tag { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .tag-piso { background: var(--blue-50); color: var(--blue-800); }
+  .tag-chalet { background: var(--green-50); color: var(--green-600); }
+  .tag-casa { background: var(--amber-50); color: var(--amber-600); }
+  .tag-local { background: var(--pink-50); color: var(--pink-600); }
+  .tag-terreno { background: #FAEEDA; color: var(--amber-600); }
+  .tag-finca { background: var(--gray-50); color: var(--gray-600); }
+  .card-btn { margin-top: 8px; width: 100%; padding: 5px; border-radius: 7px; border: 1px solid var(--blue-100); background: var(--blue-50); color: var(--blue-800); font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background 0.12s; }
+  .card-btn:hover { background: var(--blue-100); }
+  .empty { font-size: 12px; color: var(--text-muted); text-align: center; padding: 1.5rem 0; opacity: 0.5; }
+
+  /* MODAL */
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 1rem; backdrop-filter: blur(2px); }
+  .modal { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 1.5rem; max-width: 420px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+  .modal-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem; }
+  .modal-title { font-size: 16px; font-weight: 600; color: var(--text); line-height: 1.3; max-width: 320px; }
+  .modal-close { background: var(--gray-50); border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 16px; color: var(--text-secondary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.1s; }
+  .modal-close:hover { background: var(--gray-100); }
+  .modal-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .modal-row:last-of-type { border: none; }
+  .mlabel { color: var(--text-muted); }
+  .mval { font-weight: 500; color: var(--text); text-align: right; }
+  .modal-price { font-family: 'DM Mono', monospace; font-size: 22px; font-weight: 500; color: var(--text); margin: 1rem 0 0.5rem; }
+  .modal-section { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 1rem 0 0.5rem; }
+  .notes-input { width: 100%; padding: 8px 10px; border: 1px solid var(--border-md); border-radius: var(--radius); font-size: 13px; color: var(--text); background: var(--bg); resize: vertical; min-height: 70px; font-family: inherit; outline: none; transition: border-color 0.15s; }
+  .notes-input:focus { border-color: var(--blue-400); }
+  .modal-actions { display: flex; gap: 8px; margin-top: 1rem; }
+  .mbtn { flex: 1; padding: 8px; border-radius: var(--radius); border: 1px solid var(--border-md); background: transparent; color: var(--text-secondary); font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; transition: background 0.12s; }
+  .mbtn:hover { background: var(--gray-50); }
+  .mbtn-blue { background: var(--blue-600); color: #fff; border-color: var(--blue-600); }
+  .mbtn-blue:hover { background: var(--blue-800); }
+  .estado-badge { display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.3px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo">CRM <span>Inmobiliaria</span></div>
+  </div>
+  <div class="topbar-stats" id="topbar-stats"></div>
+</div>
+
+<div class="filterbar">
+  <span class="filter-label">Filtrar:</span>
+  <button class="fbtn active" onclick="setFilter('todos')">Todos</button>
+  <button class="fbtn" onclick="setFilter('piso')">Pisos</button>
+  <button class="fbtn" onclick="setFilter('chalet')">Chalets</button>
+  <button class="fbtn" onclick="setFilter('casa')">Casas</button>
+  <button class="fbtn" onclick="setFilter('local')">Locales</button>
+  <button class="fbtn" onclick="setFilter('terreno')">Terrenos</button>
+  <button class="fbtn" onclick="setFilter('finca')">Fincas</button>
+</div>
+
+<div class="board-wrap">
+  <div class="board" id="board"></div>
+</div>
+
+<div id="modal-container"></div>
+
+<script>
+const PROPS_INIT = [
+  { id:1, titulo:"Finca rústica", loc:"Villafranca del Cid", precio:"190.000 €", tipo:"finca", estado:"recibida", notas:"" },
+  { id:2, titulo:"Casa en centro", loc:"Vila-real", precio:"180.000 €", tipo:"casa", estado:"recibida", notas:"" },
+  { id:3, titulo:"Apartamento Playa Coral", loc:"Oropesa del Mar", precio:"130.000 €", tipo:"piso", estado:"recibida", notas:"" },
+  { id:4, titulo:"Casa en Costera", loc:"Castellnovo", precio:"175.000 €", tipo:"casa", estado:"recibida", notas:"" },
+  { id:5, titulo:"Chalet exclusivo", loc:"Vila-real (Madrigal)", precio:"650.000 €", tipo:"chalet", estado:"recibida", notas:"" },
+  { id:6, titulo:"Casa adosada mediterránea", loc:"Sant Joan de Moró", precio:"130.000 €", tipo:"casa", estado:"recibida", notas:"" },
+  { id:7, titulo:"Piso bajo con terraza", loc:"Burriana", precio:"75.000 €", tipo:"piso", estado:"recibida", notas:"" },
+  { id:8, titulo:"Piso con 2 parkings", loc:"La Vall d'Uixó", precio:"133.900 €", tipo:"piso", estado:"recibida", notas:"" },
+  { id:9, titulo:"2 pisos reformados (P3+P4)", loc:"La Vall d'Uixó", precio:"58.000 €", tipo:"piso", estado:"recibida", notas:"" },
+  { id:10, titulo:"Piso en rentabilidad", loc:"Cabanes", precio:"95.000 €", tipo:"piso", estado:"recibida", notas:"" },
+  { id:11, titulo:"Local 956m² 3 plantas", loc:"Vila-real (centro)", precio:"590.000 €", tipo:"local", estado:"recibida", notas:"" },
+  { id:12, titulo:"Piso 3ª planta con terraza", loc:"Vila-real (Madrigal)", precio:"240.000 €", tipo:"piso", estado:"recibida", notas:"" },
+  { id:13, titulo:"Piso semiamueblado luminoso", loc:"La Vall d'Uixó", precio:"180.000 €", tipo:"piso", estado:"recibida", notas:"" },
+  { id:14, titulo:"Casa rural lista para entrar", loc:"Alcudia de Veo", precio:"150.000 €", tipo:"casa", estado:"recibida", notas:"" },
+  { id:15, titulo:"Chalet 4 hab. zona tranquila", loc:"Vila-real (Madrigal)", precio:"460.000 €", tipo:"chalet", estado:"recibida", notas:"" },
+  { id:16, titulo:"Piso 2 hab. con baños", loc:"Les Alqueries", precio:"135.000 €", tipo:"piso", estado:"recibida", notas:"" },
+  { id:17, titulo:"Casa con piscina privada", loc:"Almazora", precio:"395.000 €", tipo:"chalet", estado:"recibida", notas:"" },
+  { id:18, titulo:"Chalet precioso 4 hab.", loc:"Vila-real (Madrigal)", precio:"280.000 €", tipo:"chalet", estado:"recibida", notas:"" },
+  { id:19, titulo:"Local 115m² Av. Alemania", loc:"Vila-real", precio:"68.000 €", tipo:"local", estado:"recibida", notas:"" },
+  { id:20, titulo:"Local gran potencial", loc:"Vila-real", precio:"90.000 €", tipo:"local", estado:"recibida", notas:"" },
+  { id:21, titulo:"Solar 1ª línea playa", loc:"Benicasim (Eurosol)", precio:"4.000.000 €", tipo:"terreno", estado:"recibida", notas:"" },
+  { id:22, titulo:"Solar urbano 800m²", loc:"Vila-real (Madrigal)", precio:"140.000 €", tipo:"terreno", estado:"recibida", notas:"" },
+  { id:23, titulo:"Solar urbanizado 800m²", loc:"Alcalà de Xivert", precio:"995.000 €", tipo:"terreno", estado:"recibida", notas:"" },
+  { id:24, titulo:"3 fincas con caseta rústica", loc:"Nules", precio:"15.000 €", tipo:"finca", estado:"recibida", notas:"" },
+  { id:25, titulo:"3 fincas marjalería", loc:"Nules", precio:"15.000 €", tipo:"finca", estado:"recibida", notas:"" },
+];
+
+const COLS = [
+  { key:"recibida", label:"Recibida", cls:"col-recibida" },
+  { key:"analizada", label:"Analizada", cls:"col-analizada" },
+  { key:"contactada", label:"Contactada", cls:"col-contactada" },
+  { key:"negociacion", label:"Negociación", cls:"col-negociacion" },
+  { key:"captada", label:"Captada", cls:"col-captada" },
+];
+
+const NEXT = { recibida:"analizada", analizada:"contactada", contactada:"negociacion", negociacion:"captada" };
+const NEXT_LABEL = { recibida:"Marcar analizada", analizada:"Marcar contactada", contactada:"En negociación", negociacion:"Marcar captada" };
+
+const ESTADO_STYLE = {
+  recibida: "background:#E6F1FB;color:#0C447C",
+  analizada: "background:#FAEEDA;color:#854F0B",
+  contactada: "background:#F1EFE8;color:#5F5E5A",
+  negociacion: "background:#E1F5EE;color:#0F6E56",
+  captada: "background:#EAF3DE;color:#3B6D11",
+};
+
+const STORAGE_KEY = 'crm_inmobiliaria_v1';
+
+function load() {
+  try {
+    const s = localStorage.getItem(STORAGE_KEY);
+    return s ? JSON.parse(s) : JSON.parse(JSON.stringify(PROPS_INIT));
+  } catch { return JSON.parse(JSON.stringify(PROPS_INIT)); }
+}
+
+function save(props) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(props)); } catch {}
+}
+
+let props = load();
+let filter = 'todos';
+let modal = null;
+
+function tagClass(tipo) { return 'tag tag-' + tipo; }
+function tagLabel(tipo) {
+  return { piso:"Piso", chalet:"Chalet", casa:"Casa", local:"Local", terreno:"Terreno", finca:"Finca" }[tipo] || tipo;
+}
+
+function setFilter(t) {
+  filter = t;
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase() === (t === 'todos' ? 'todos' : tagLabel(t).toLowerCase())));
+  renderBoard();
+}
+
+function advanceState(id) {
+  const p = props.find(x => x.id === id);
+  if (p && NEXT[p.estado]) { p.estado = NEXT[p.estado]; save(props); renderAll(); }
+}
+
+function openModal(id) { modal = id; renderModal(); }
+function closeModal() { modal = null; document.getElementById('modal-container').innerHTML = ''; }
+
+function saveNote(id, val) {
+  const p = props.find(x => x.id === id);
+  if (p) { p.notas = val; save(props); }
+}
+
+function addProp() {
+  const t = document.getElementById('new-titulo').value.trim();
+  const l = document.getElementById('new-loc').value.trim();
+  const pr = document.getElementById('new-precio').value.trim();
+  const tp = document.getElementById('new-tipo').value;
+  if (!t || !l) return;
+  const newId = props.length ? Math.max(...props.map(x=>x.id)) + 1 : 1;
+  props.unshift({ id: newId, titulo: t, loc: l, precio: pr || '—', tipo: tp, estado: 'recibida', notas: '' });
+  save(props);
+  document.getElementById('new-titulo').value = '';
+  document.getElementById('new-loc').value = '';
+  document.getElementById('new-precio').value = '';
+  renderAll();
+}
+
+function renderTopbar() {
+  const counts = {};
+  COLS.forEach(c => counts[c.key] = props.filter(p => p.estado === c.key).length);
+  const dotColors = { recibida:'#378ADD', analizada:'#BA7517', contactada:'#888780', negociacion:'#1D9E75', captada:'#639922' };
+  document.getElementById('topbar-stats').innerHTML = COLS.map(c =>
+    `<div class="tstat"><span class="dot" style="background:${dotColors[c.key]}"></span><strong>${counts[c.key]}</strong> ${c.label}</div>`
+  ).join('');
+}
+
+function renderBoard() {
+  const fp = filter === 'todos' ? props : props.filter(p => p.tipo === filter);
+  document.getElementById('board').innerHTML = COLS.map(col => {
+    const cards = fp.filter(p => p.estado === col.key);
+    const cardsHtml = cards.length === 0
+      ? '<div class="empty">Sin propiedades</div>'
+      : cards.map(p => `
+          <div class="card" onclick="openModal(${p.id})">
+            <div class="card-title">${p.titulo}</div>
+            <div class="card-loc">${p.loc}</div>
+            <div class="card-price">${p.precio}</div>
+            <div class="card-tags"><span class="${tagClass(p.tipo)}">${tagLabel(p.tipo)}</span></div>
+            ${NEXT[p.estado] ? `<button class="card-btn" onclick="event.stopPropagation();advanceState(${p.id})">${NEXT_LABEL[p.estado]} →</button>` : ''}
+          </div>`).join('');
+    return `<div class="col ${col.cls}">
+      <div class="col-head">${col.label}<span class="cnt">${cards.length}</span></div>
+      ${cardsHtml}
+    </div>`;
+  }).join('');
+}
+
+function renderModal() {
+  const p = props.find(x => x.id === modal);
+  if (!p) return;
+  const next = NEXT[p.estado];
+  document.getElementById('modal-container').innerHTML = `
+    <div class="modal-bg" onclick="closeModal()">
+      <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-top">
+          <div class="modal-title">${p.titulo}</div>
+          <button class="modal-close" onclick="closeModal()">×</button>
+        </div>
+        <div class="modal-price">${p.precio}</div>
+        <div class="modal-row"><span class="mlabel">Localización</span><span class="mval">${p.loc}</span></div>
+        <div class="modal-row"><span class="mlabel">Tipo</span><span class="mval">${tagLabel(p.tipo)}</span></div>
+        <div class="modal-row"><span class="mlabel">Estado</span><span class="mval"><span class="estado-badge" style="${ESTADO_STYLE[p.estado]}">${p.estado.charAt(0).toUpperCase()+p.estado.slice(1)}</span></span></div>
+        <div class="modal-section">Notas</div>
+        <textarea class="notes-input" placeholder="Añade notas sobre esta propiedad..." oninput="saveNote(${p.id}, this.value)">${p.notas}</textarea>
+        <div class="modal-actions">
+          <button class="mbtn" onclick="closeModal()">Cerrar</button>
+          ${next ? `<button class="mbtn mbtn-blue" onclick="advanceState(${p.id});closeModal()">${NEXT_LABEL[p.estado]} →</button>` : '<span style="font-size:12px;color:var(--text-muted);align-self:center">Proceso completado</span>'}
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderAll() { renderTopbar(); renderBoard(); }
+
+// ADD FORM (bottom of page)
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.createElement('div');
+  form.style.cssText = 'padding:1rem 1.5rem 2rem;';
+  form.innerHTML = `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;max-width:700px;">
+      <div style="font-size:13px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:0.75rem;">Añadir propiedad</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">
+        <input id="new-titulo" type="text" placeholder="Título" style="flex:2;min-width:140px;padding:7px 10px;border:1px solid var(--border-md);border-radius:var(--radius);font-size:13px;font-family:inherit;background:var(--bg);color:var(--text);outline:none;">
+        <input id="new-loc" type="text" placeholder="Localización" style="flex:2;min-width:120px;padding:7px 10px;border:1px solid var(--border-md);border-radius:var(--radius);font-size:13px;font-family:inherit;background:var(--bg);color:var(--text);outline:none;">
+        <input id="new-precio" type="text" placeholder="Precio (ej: 150.000 €)" style="flex:1;min-width:120px;padding:7px 10px;border:1px solid var(--border-md);border-radius:var(--radius);font-size:13px;font-family:inherit;background:var(--bg);color:var(--text);outline:none;">
+        <select id="new-tipo" style="padding:7px 10px;border:1px solid var(--border-md);border-radius:var(--radius);font-size:13px;font-family:inherit;background:var(--bg);color:var(--text);outline:none;">
+          <option value="piso">Piso</option>
+          <option value="chalet">Chalet</option>
+          <option value="casa">Casa</option>
+          <option value="local">Local</option>
+          <option value="terreno">Terreno</option>
+          <option value="finca">Finca</option>
+        </select>
+        <button onclick="addProp()" style="padding:7px 18px;background:var(--blue-600);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">+ Añadir</button>
+      </div>
+    </div>`;
+  document.body.appendChild(form);
+  renderAll();
+});
+</script>
+</body>
+</html>
